@@ -8,6 +8,8 @@ import org.restlet.routing.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import exp.restlet.resources.server.EPadWebServiceServerResource;
+
 /**
  * Creation of simple Restlet service.
  * <p>
@@ -85,6 +87,8 @@ public class MyApplication extends Application
 		// This works if we directly create application in main above. New resource instance created for each request.
 		router.attach("http://localhost:8111/", MyServerResource.class);
 		// router.attach("http://localhost:8111/", tracer);
+
+		router.attach("http://localhost:8111/server/{operation}", EPadWebServiceServerResource.class);
 
 		return router;
 	}
