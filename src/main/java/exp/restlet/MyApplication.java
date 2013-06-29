@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import exp.restlet.resources.server.EPadWebServiceServerResource;
+import exp.restlet.resources.server.JSONTestServerResource;
 import exp.restlet.resources.server.WindowLevelServerResource;
 
 /**
@@ -91,6 +92,7 @@ public class MyApplication extends Application
 
 		router.attach("http://localhost:8111/server/{operation}", EPadWebServiceServerResource.class);
 		router.attach("http://localhost:8111/level", WindowLevelServerResource.class);
+		router.attach("http://localhost:8111/json", JSONTestServerResource.class);
 
 		return router;
 	}
