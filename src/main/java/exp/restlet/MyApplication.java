@@ -1,6 +1,7 @@
 package exp.restlet;
 
 import org.restlet.Application;
+import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -45,9 +46,12 @@ public class MyApplication extends Application
 
 	public static void main(String[] args) throws Exception
 	{
-		Server server = new Server(Protocol.HTTP, 8111);
+		Component component = new Component();
 
-		server.setNext(new MyApplication());
+		Server server = new Server(Protocol.HTTP, 8111, component);
+
+		component.getDefaultHost().attach(new MyApplication());
+
 		server.start();
 
 		logger.info("Server started on port 8111!");
@@ -71,28 +75,21 @@ public class MyApplication extends Application
 		blocker.setNext(tracer);
 
 		logger.info("****************** createInboundRoot **********************");
+		logger.info("context: " + getContext());
 
 		Router router = new Router(getContext());
 
 		/*
-		 * router.attach("http://localhost:8111/", tracer);
+		 * router.attach("/", tracer);
 		 * 
-		 * router.attach("http://localhost:8111/accounts/", tracer);
+		 * router.attach("/accounts/", tracer);
 		 * 
-		 * router.attach("http://localhost:8111/accounts/{accountId}", blocker);
+		 * router.attach("/accounts/{accountId}", blocker);
 		 */
 
-		// This works when we are creating application via web.xml and mvn jetty:run
-		router.attach("/", MyServerResource.class); // A new resource instance is created for each request.
-		// router.attach("/", tracer);
-
-		// This works if we directly create application in main above. New resource instance created for each request.
-		router.attach("http://localhost:8111/", MyServerResource.class);
-		// router.attach("http://localhost:8111/", tracer);
-
-		router.attach("http://localhost:8111/server/{operation}", EPadWebServiceServerResource.class);
-		router.attach("http://localhost:8111/level", WindowLevelServerResource.class);
-		router.attach("http://localhost:8111/json", JSONTestServerResource.class);
+		router.attach("/server/{operation}", EPadWebServiceServerResource.class);
+		router.attach("/level", WindowLevelServerResource.class);
+		router.attach("/json", JSONTestServerResource.class);
 
 		return router;
 	}
