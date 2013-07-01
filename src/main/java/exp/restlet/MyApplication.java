@@ -9,9 +9,10 @@ import org.restlet.routing.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exp.restlet.resources.server.MyWebServiceServerResource;
 import exp.restlet.resources.server.JSONTestServerResource;
+import exp.restlet.resources.server.MyCommandServerResource;
 import exp.restlet.resources.server.MyQueryServerResource;
+import exp.restlet.resources.server.MyWebServiceServerResource;
 
 /**
  * Creation of simple Restlet service.
@@ -80,16 +81,13 @@ public class MyApplication extends Application
 		Router router = new Router(getContext());
 
 		/*
-		 * router.attach("/", tracer);
-		 * 
-		 * router.attach("/accounts/", tracer);
-		 * 
-		 * router.attach("/accounts/{accountId}", blocker);
+		 * router.attach("/", tracer); router.attach("/accounts/", tracer); router.attach("/accounts/{accountId}", blocker);
 		 */
 
 		router.attach("/server/{operation}", MyWebServiceServerResource.class);
-		router.attach("/level", MyQueryServerResource.class);
+		router.attach("/level", MyCommandServerResource.class);
 		router.attach("/json", JSONTestServerResource.class);
+		router.attach("/query", MyQueryServerResource.class);
 
 		return router;
 	}
