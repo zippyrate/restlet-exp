@@ -9,9 +9,9 @@ import org.restlet.routing.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exp.restlet.resources.server.EPadWebServiceServerResource;
+import exp.restlet.resources.server.MyWebServiceServerResource;
 import exp.restlet.resources.server.JSONTestServerResource;
-import exp.restlet.resources.server.WindowLevelServerResource;
+import exp.restlet.resources.server.MyQueryServerResource;
 
 /**
  * Creation of simple Restlet service.
@@ -87,8 +87,8 @@ public class MyApplication extends Application
 		 * router.attach("/accounts/{accountId}", blocker);
 		 */
 
-		router.attach("/server/{operation}", EPadWebServiceServerResource.class);
-		router.attach("/level", WindowLevelServerResource.class);
+		router.attach("/server/{operation}", MyWebServiceServerResource.class);
+		router.attach("/level", MyQueryServerResource.class);
 		router.attach("/json", JSONTestServerResource.class);
 
 		return router;
