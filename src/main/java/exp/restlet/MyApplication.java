@@ -89,9 +89,6 @@ public class MyApplication extends Application
 		router.attach("/json", JSONTestServerResource.class);
 		router.attach("/query", MyQueryServerResource.class);
 
-		// Needed to initiate client HTTP requests.
-		// getConnectorService().getClientProtocols().add(Protocol.HTTP);
-
 		return router;
 	}
 }
