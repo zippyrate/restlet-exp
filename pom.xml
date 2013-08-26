@@ -2,35 +2,19 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>exp.restlet</groupId>
-  <artifactId>restlet-exp</artifactId>
+  <groupId>exp.dicom</groupId>
+  <artifactId>dicom-exp</artifactId>
   <version>1.0</version>
   <packaging>jar</packaging>
-  <name>Restlet Experiment</name>
-  <url>http://maven.apache.org</url>
+  <name>DICOM Experiment</name>
 
   <properties>
 
-    <restlet.version>2.1.2</restlet.version>
-    <jetty.version>7.3.0.v20110203</jetty.version>
-    <mysql.connector.version>5.1.22</mysql.connector.version>
-    <gson.version>2.2.1</gson.version>
-    <commons.fileupload.version>1.2.2</commons.fileupload.version>
-    <commons.logging.version>1.1.1</commons.logging.version>
-    <commons.httpclient.version>3.1</commons.httpclient.version>
-    <fluent.hc.version>4.2.3</fluent.hc.version>
+    <dcm4chee.version>2.0.27</dcm4chee.version>
     <log4j.version>1.2.16</log4j.version>
     <slf4j.version>1.6.1</slf4j.version>
-    <servlet.api.version>2.5</servlet.api.version>
-    <httpmime.version>4.2.3</httpmime.version>
-    <httpcore.version>4.2.2</httpcore.version>
-    <httpclient.cache.version>4.2.3</httpclient.cache.version>
-    <httpclient.version>4.2.3</httpclient.version>
-    <commons.cli.version>1.2</commons.cli.version>
-    <commons.io.version>1.4</commons.io.version>
-    <commons.codec.version>1.7</commons.codec.version>
     <junit.version>3.8.1</junit.version>
-
+    <commons.codec.version>1.7</commons.codec.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
   </properties>
@@ -38,99 +22,55 @@
   <repositories>
 
     <repository>
-      <id>maven-restlet</id>
-      <name>Public online Restlet repository</name>
-      <url>http://maven.restlet.org</url>
+      <id>dcm4che</id>
+      <name>DCM4CHE Maven Repository</name>
+      <url>http://www.dcm4che.org/maven2/</url>
     </repository>
+
+    <repository>  
+      <id>jboss-public-repository-group</id>  
+      <name>JBoss Public Maven Repository Group</name>  
+      <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>  
+          <layout>default</layout>  
+          <releases>  
+            <enabled>true</enabled>  
+            <updatePolicy>never</updatePolicy>  
+          </releases>  
+          <snapshots>  
+            <enabled>true</enabled>  
+            <updatePolicy>never</updatePolicy>  
+          </snapshots>  
+        </repository>  
 
   </repositories>
 
- <dependencies>
+  <dependencies>
 
     <dependency>
-        <groupId>org.restlet.jse</groupId>
-        <artifactId>org.restlet</artifactId>
-        <version>${restlet.version}</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.restlet.jse</groupId>
-        <artifactId>org.restlet.ext.fileupload</artifactId>
-        <version>${restlet.version}</version>
+      <groupId>dcm4che</groupId>
+      <artifactId>dcm4che-core</artifactId>
+      <version>${dcm4chee.version}</version>
     </dependency>
 
     <dependency>
-        <groupId>org.restlet.jse</groupId>
-        <artifactId>org.restlet.ext.xml</artifactId>
-        <version>${restlet.version}</version>
+      <groupId>dcm4che</groupId>
+      <artifactId>dcm4che-imageio</artifactId>
+      <version>${dcm4chee.version}</version>
     </dependency>
 
-    <dependency>
-        <groupId>org.restlet.jse</groupId>
-        <artifactId>org.restlet.ext.jetty</artifactId>
-        <version>${restlet.version}</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.restlet.jse</groupId>
-        <artifactId>org.restlet.ext.jaxrs</artifactId>
-        <version>${restlet.version}</version>
-    </dependency>
-
-    <dependency>
-       <groupId>org.restlet.jse</groupId>
-       <artifactId>org.restlet.ext.json</artifactId>
-        <version>${restlet.version}</version>
-    </dependency>
-
-    <dependency>
-       <groupId>org.restlet.jee</groupId>
-       <artifactId>org.restlet.ext.servlet</artifactId>
-        <version>${restlet.version}</version>
-    </dependency>
-
-    <dependency>
-	<groupId>javax.ws.rs</groupId>
-	<artifactId>jsr311-api</artifactId>
-	<version>1.1.1</version>
-    </dependency>
-            
-    <dependency>
-	<groupId>com.google.code.gson</groupId>
-	<artifactId>gson</artifactId>
-        <version>${gson.version}</version>
-    </dependency>
-
-    <dependency>
-	<groupId>commons-fileupload</groupId>
-	<artifactId>commons-fileupload</artifactId>
-        <version>${commons.fileupload.version}</version>
-    </dependency>
-
-    <dependency>
-	<groupId>commons-logging</groupId>
-	<artifactId>commons-logging</artifactId>
-        <version>${commons.logging.version}</version>
-    </dependency>
-    
-    <dependency>
-	<groupId>commons-httpclient</groupId>
-	<artifactId>commons-httpclient</artifactId>
-        <version>${commons.httpclient.version}</version>
-    </dependency>
-            
-    <dependency>
-	<groupId>org.apache.httpcomponents</groupId>
-	<artifactId>fluent-hc</artifactId>
-        <version>${fluent.hc.version}</version>
-    </dependency>
-            
     <dependency>
 	<groupId>log4j</groupId>
 	<artifactId>log4j</artifactId>
         <version>${log4j.version}</version>
     </dependency>
-    
+
+
+    <dependency>
+	<groupId>com.sun.media</groupId>
+	<artifactId>jai_imageio</artifactId>
+	<version>1.1</version>
+    </dependency>
+
     <dependency>
 	<groupId>org.slf4j</groupId>
 	<artifactId>slf4j-api</artifactId>
@@ -142,25 +82,6 @@
 	<artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
     </dependency>
-    
-    <dependency>
-	<groupId>commons-cli</groupId>
-	<artifactId>commons-cli</artifactId>
-	<version>${commons.cli.version}</version>
-    </dependency>
-                                    
-    <dependency>
-	<groupId>commons-codec</groupId>
-	<artifactId>commons-codec</artifactId>
-	<version>${commons.codec.version}</version>
-    </dependency>
-            
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
-      <scope>compile</scope>
-    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -169,49 +90,8 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-	<groupId>org.apache.httpcomponents</groupId>
-	<artifactId>httpclient-cache</artifactId>
-	<version>${httpclient.cache.version}</version>
-    </dependency>
 
-    <dependency>
-	<groupId>org.apache.httpcomponents</groupId>
-	<artifactId>httpcore</artifactId>
-	<version>${httpcore.version}</version>
-    </dependency>
-
-    <dependency>
-	<groupId>org.apache.httpcomponents</groupId>
-	<artifactId>httpmime</artifactId>
-	<version>${httpmime.version}</version>
-    </dependency>
-
-   <dependency>
-     <groupId>mysql</groupId>
-     <artifactId>mysql-connector-java</artifactId>
-     <version>${mysql.connector.version}</version>
-   </dependency>
-
-   <dependency>
-     <groupId>commons-io</groupId>
-     <artifactId>commons-io</artifactId>
-     <version>${commons.io.version}</version>
-   </dependency>
-
-   <dependency>
-     <groupId>org.eclipse.jetty.aggregate</groupId>
-     <artifactId>jetty-all</artifactId>
-     <version>${jetty.version}</version>
-   </dependency>
-
-   <dependency>
-     <groupId>javax.servlet</groupId>
-     <artifactId>servlet-api</artifactId>
-     <version>${servlet.api.version}</version>
-   </dependency>
-
-  </dependencies>
+ </dependencies>
 
   <build>
 
@@ -227,24 +107,14 @@
       </plugin>
 
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>${jetty.version}</version>
-        <configuration>
-          <scanIntervalSeconds>2</scanIntervalSeconds>
-        </configuration>
-      </plugin>
-
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
 	<version>2.4</version>
         <configuration>
 	  <archive>
             <manifest>
-              <mainClass>exp.restlet.MyApplication</mainClass>
-              <packageName>exp.restlet</packageName>
+              <mainClass>exp.dicom.DicomReader</mainClass>
+              <packageName>exp.dicom</packageName>
             </manifest>
             <manifestEntries>
               <mode>development</mode>
@@ -253,22 +123,27 @@
 	  </archive>
         </configuration>
       </plugin>
-
-      <!-- mvn exec:exec to run. Will run in new VM, not Maven's VM -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <configuration>
-          <executable>java</executable>
-          <arguments>
-            <argument>-Xms512m</argument>
-            <argument>-Xmx512m</argument>
-            <argument>-classpath</argument>
-            <classpath/>
-            <argument>exp.restlet.MyApplication</argument>
-          </arguments>
-        </configuration>
+	<artifactId>maven-assembly-plugin</artifactId>
+	<configuration>
+	  <archive>
+	    <manifest>
+              <mainClass>exp.dicom.DicomReader</mainClass>
+	    </manifest>
+	  </archive>
+	  <descriptorRefs>
+	    <descriptorRef>jar-with-dependencies</descriptorRef>
+	  </descriptorRefs>
+	</configuration>
+	<executions>
+	  <execution>
+	    <id>make-assembly</id> <!-- this is used for inheritance merges -->
+	    <phase>package</phase> <!-- bind to the packaging phase -->
+	    <goals>
+              <goal>single</goal>
+	    </goals>
+	  </execution>
+	</executions>
       </plugin>
 
     </plugins>
