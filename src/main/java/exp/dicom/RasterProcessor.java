@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomObject;
@@ -12,41 +11,19 @@ import org.dcm4che2.data.Tag;
 
 public class RasterProcessor
 {
-	/**
-	 * Logger object.
-	 */
 	Logger logger = Logger.getLogger(this.getClass());
-	/**
-	 * Controls amount of diagnostic output.
-	 */
 	protected int debugLevel = 0;
 
-	/**
-	 * Getter for {@link #debugLevel} property.
-	 * 
-	 * @return value of property
-	 */
 	public int getDebugLevel()
 	{
 		return debugLevel;
 	}
 
-	/**
-	 * Setter for {@link #debugLevel} property.
-	 * 
-	 * @param value value for property
-	 */
 	public void setDebugLevel(int value)
 	{
 		debugLevel = value;
 	}
 
-	/**
-	 * Class to generate a histogram of values.
-	 * 
-	 * @author Bradley Ross
-	 * 
-	 */
 	protected static class Distribution
 	{
 		/**
@@ -695,15 +672,15 @@ public class RasterProcessor
 		unusedHighBits = bitsAllocated - 1 - highBit;
 		unusedLowBits = highBit - bitsStored + 1;
 		dataMask = (1 << bitsStored) - 1;
-		System.out.println("Bits allocated=" + Integer.toString(bitsAllocated) + ", stored=" + Integer.toString(bitsStored)
-				+ ", high=" + Integer.toString(highBit));
+		// System.out.println("Bits allocated=" + Integer.toString(bitsAllocated) + ", stored=" +
+		// Integer.toString(bitsStored)
+		// + ", high=" + Integer.toString(highBit));
 		if (pixelRepresentation == 0) {
-			System.out.println("Unsigned values");
+			// System.out.println("Unsigned values");
 		} else {
-			System.out.println("Signed values");
+			// System.out.println("Signed values");
 		}
-		System.out.println("Data mask is " + Integer.toString(dataMask, 16));
-
+		// System.out.println("Data mask is " + Integer.toString(dataMask, 16));
 	}
 
 	/**
@@ -730,7 +707,6 @@ public class RasterProcessor
 			/* unsigned DataPixel values */
 			return working & dataMask;
 		} else {
-			// if (working > (1 << (bitsStored - 1) - 1)) {
 			if (working > (1 << (bitsStored - 1)) - 1) {
 				System.err.print(".");
 				working = (working & dataMask) - (1 << (bitsStored));
@@ -772,274 +748,29 @@ public class RasterProcessor
 		}
 	}
 
-	/**
-	 * Create the image for the PNG file.
-	 * <p>
-	 * This routine places the high order bits in the first channel and the low order bits in the second channel.
-	 * </p>
-	 * <p>
-	 * If dealing with signed data, it is necessary to add a constant to the pixel values before placing them in the PNG
-	 * file. The value used is placed in the blue channel of the first two pixels on the first row of the image. The high
-	 * order bits are placed in the first pixel while the low order bits are placed in the second pixel.
-	 * </p>
-	 * 
-	 * @param raster raster from grayscale image
-	 * @return bgr image with two channels used
-	 */
 	public BufferedImage buildPng(Raster raster)
 	{
 		int[] grayInputArray = new int[1];
 		int[] grayArray = new int[1];
 		int[] bgrArray = new int[3];
-		BufferedImage pngImage = new BufferedImage(raster.getWidth(), raster.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		// BufferedImage pngImage = new BufferedImage(raster.getWidth(), raster.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage pngImage = new BufferedImage(raster.getWidth(), raster.getHeight(), BufferedImage.TYPE_USHORT_GRAY);
 		WritableRaster writablePNGRaster = pngImage.getRaster();
-		Distribution rawValuesDistribution = null;
-		Distribution highOrderBitsDistribution = null;
-		Distribution lowOrderBitsDistribution = null;
+		int[] pngGrayArray = new int[2];
 
-		if (debugLevel > 0) {
-			if (pixelRepresentation == 0) {
-				System.out.println("Running buildPng with unsigned PixelData");
-			} else {
-				System.out.println("Running buildPng with signed PixelData");
-			}
-			rawValuesDistribution = new Distribution(-40000.0f, 40000.0f);
-			rawValuesDistribution.setDesc("buildPng - Raw values");
-			highOrderBitsDistribution = new Distribution(0.0f, 256.0f);
-			highOrderBitsDistribution.setDesc("buildPng - high order bits");
-			lowOrderBitsDistribution = new Distribution(0.0f, 256.0f);
-			lowOrderBitsDistribution.setDesc("buildPng - low order bits");
-		}
 		for (int x = 0; x < raster.getWidth(); x++) {
 			for (int y = 0; y < raster.getHeight(); y++) {
 				grayArray = raster.getPixel(x, y, grayInputArray);
 				int pixelValue = dataValue(grayArray[0]);
-				if (debugLevel > 0) {
-					rawValuesDistribution.add(pixelValue);
-					highOrderBitsDistribution.add(high(pixelValue));
-					lowOrderBitsDistribution.add(low(pixelValue));
-				}
 				bgrArray[0] = high(pixelValue);
 				bgrArray[1] = low(pixelValue);
-				if (y == 0 && x == 0) {
-					bgrArray[2] = high(getAdjustment());
-				} else if (y == 0 && x == 1) {
-					bgrArray[2] = low(getAdjustment());
-				} else {
-					bgrArray[2] = 0;
-				}
-				writablePNGRaster.setPixel(x, y, bgrArray);
+				pngGrayArray[1] = high(pixelValue);
+				pngGrayArray[0] = low(pixelValue);
+
+				// writablePNGRaster.setPixel(x, y, bgrArray);
+				writablePNGRaster.setPixel(x, y, pngGrayArray);
 			}
-		}
-		if (debugLevel > 0) {
-			System.out.println("Distribution of gray values");
-			rawValuesDistribution.print();
-			System.out.println("Distribution of high order bits");
-			highOrderBitsDistribution.print();
-			System.out.println("Distribution of low order bits");
-			lowOrderBitsDistribution.print();
 		}
 		return pngImage;
-	}
-
-	/**
-	 * Pack 16 bit PixelData in 2 channels of image.
-	 * <p>
-	 * For signed PixelData -32768 ( - 1<<15) to 32767 (1<<15 - 1) mapped to 0 to 65535 (1<<16 - 1)
-	 * </p>
-	 * 
-	 * @param raster raster image from DCM4CHE2
-	 * @return Image containing packed data
-	 */
-	public BufferedImage buildRawS(Raster raster)
-	{
-		int[] grayInputArray = new int[1];
-		int[] grayArray = new int[1];
-		int[] bgrArray = new int[3];
-		BufferedImage working = new BufferedImage(raster.getWidth(), raster.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-		WritableRaster writable = working.getRaster();
-		Distribution rawValuesDistribution = null;
-		Distribution highOrderBitsDistribution = null;
-		Distribution lowOrderBitsDistribution = null;
-
-		if (debugLevel > 0) {
-			if (pixelRepresentation == 0) {
-				System.out.println("Running buildRawS with unsigned PixelData");
-				rawValuesDistribution = new Distribution(0, 10000.0f);
-			} else {
-				System.out.println("Running buildRawS with signed PixelData");
-				rawValuesDistribution = new Distribution(32768.0f - 20000.0f, 32768.0f + 20000.0f);
-			}
-			rawValuesDistribution.setDesc("buildRawS - Distribution of PixelData values");
-			highOrderBitsDistribution = new Distribution(0.0f, 256.0f);
-			highOrderBitsDistribution.setDesc("buildRawS - Distribution of high order bits");
-			lowOrderBitsDistribution = new Distribution(0.0f, 256.0f);
-			lowOrderBitsDistribution.setDesc("buildRawS - Distribution of low order bits");
-		}
-		for (int x = 0; x < raster.getWidth(); x++) {
-			for (int y = 0; y < raster.getHeight(); y++) {
-				grayArray = raster.getPixel(x, y, grayInputArray);
-				int pixelValue = dataValue(grayArray[0]);
-				if (debugLevel > 0) {
-					rawValuesDistribution.add(pixelValue);
-					highOrderBitsDistribution.add(high(pixelValue));
-					lowOrderBitsDistribution.add(low(pixelValue));
-				}
-				bgrArray[0] = high(pixelValue);
-				bgrArray[1] = low(pixelValue);
-				bgrArray[2] = 0;
-				writable.setPixel(x, y, bgrArray);
-			}
-		}
-		if (debugLevel > 0) {
-			System.out.println("Distribution of gray values");
-			rawValuesDistribution.print();
-			System.out.println("Distribution of high order bits");
-			highOrderBitsDistribution.print();
-			System.out.println("Distribution of low order bits");
-			lowOrderBitsDistribution.print();
-		}
-		return working;
-	}
-
-	/**
-	 * Create the image for the PNG file after rescaling.
-	 * <p>
-	 * This routine places the high order bits in the first channel and the low order bits in the second channel.
-	 * </p>
-	 * 
-	 * @param raster raster from grayscale image
-	 * @return bgr image with two channels used
-	 */
-	public BufferedImage buildScaled(Raster raster)
-	{
-		int[] grayInputArray = new int[1];
-		int[] grayArray = new int[1];
-		int[] bgrArray = new int[3];
-		BufferedImage pngImage = new BufferedImage(raster.getWidth(), raster.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-		WritableRaster pngRaster = pngImage.getRaster();
-		Distribution rawValuesDistribution = null;
-		Distribution highOrderBitsDistribution = null;
-		Distribution lowOrderBitsDistribution = null;
-
-		if (debugLevel > 0) {
-			rawValuesDistribution = new Distribution(-40000.0f, 40000.0f);
-			rawValuesDistribution.setDesc("buildScaled - Distribution of rescaled gray values");
-			highOrderBitsDistribution = new Distribution(0.0f, 256.0f);
-			highOrderBitsDistribution.setDesc("buildScaled - Distribution of high order bits");
-			lowOrderBitsDistribution = new Distribution(0.0f, 256.0f);
-			lowOrderBitsDistribution.setDesc("buildScaled - Distribution of low order bits");
-		}
-		for (int x = 0; x < raster.getWidth(); x++) {
-			for (int y = 0; y < raster.getHeight(); y++) {
-				grayArray = raster.getPixel(x, y, grayInputArray);
-				int pixelValue = dataValue(grayArray[0]);
-				float scaledValue = rescaleSlope * pixelValue + rescaleIntercept;
-				pixelValue = (int)scaledValue;
-
-				if (debugLevel > 0) {
-					rawValuesDistribution.add(pixelValue);
-					highOrderBitsDistribution.add(high(pixelValue));
-					lowOrderBitsDistribution.add(low(pixelValue));
-				}
-				bgrArray[0] = high(pixelValue);
-				bgrArray[1] = low(pixelValue);
-				bgrArray[2] = 0;
-				pngRaster.setPixel(x, y, bgrArray);
-			}
-		}
-		if (debugLevel > 0) {
-			System.out.println("Distribution of rescaled gray values");
-			rawValuesDistribution.print();
-			System.out.println("Distribution of rescaled high order bits");
-			highOrderBitsDistribution.print();
-			System.out.println("Distribution of rescaled low order bits");
-			lowOrderBitsDistribution.print();
-		}
-		return pngImage;
-	}
-
-	/**
-	 * Create image using windowing instructions in Dicom object.
-	 * <p>
-	 * In this method, the rescale and windowing operations are carried out internally rather than by the DCM4CHE2 code.
-	 * </p>
-	 * 
-	 * @param raster Raster object from PixelData fragment
-	 * @return image with windowing applied
-	 */
-	public BufferedImage buildWindowed(Raster raster)
-	{
-		int[] dummy1 = new int[1];
-		int[] gray = new int[1];
-		if (windowCenter[0] < -10 || windowWidth[0] < -10) {
-			for (int x = 0; x < raster.getWidth(); x++) {
-				for (int y = 0; y < raster.getHeight(); y++) {
-					gray = raster.getPixel(x, y, dummy1);
-					int signed = dataValue(gray[0]);
-
-					if (signed > maximumGrayLevel) {
-						maximumGrayLevel = signed;
-					}
-					if (signed < minimumGrayLevel) {
-						minimumGrayLevel = signed;
-					}
-				}
-			}
-			windowWidth[0] = (maximumGrayLevel - minimumGrayLevel) * rescaleSlope;
-			windowCenter[0] = (maximumGrayLevel + minimumGrayLevel) * rescaleSlope / 2.0f + rescaleIntercept;
-			System.out.println("WindowWidth is " + Float.toString(windowWidth[0]));
-			System.out.println("WindowCenter is " + Float.toString(windowCenter[0]));
-		}
-		BufferedImage working = new BufferedImage(raster.getWidth(), raster.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-		WritableRaster writable = working.getRaster();
-		float a01 = 255.0f * rescaleSlope / windowWidth[0];
-		float a04 = 255.0f / windowWidth[0]
-				* (rescaleIntercept - rescaleSlope * adjustment - windowCenter[0] + 0.5f * windowWidth[0]);
-		for (int x = 0; x < raster.getWidth(); x++) {
-			for (int y = 0; y < raster.getHeight(); y++) {
-				gray = raster.getPixel(x, y, dummy1);
-				int pixelValue = dataValue(gray[0]);
-				float value = a01 * pixelValue + a04;
-				gray[0] = (int)value;
-				if (gray[0] > 255) {
-					gray[0] = 255;
-				} else if (gray[0] < 0) {
-					gray[0] = 0;
-				}
-				writable.setPixel(x, y, gray);
-			}
-		}
-		return working;
-	}
-
-	/**
-	 * Test conversion back and forth between two eight bit and one sixteen bit value.
-	 * 
-	 * @param value value to be converted from 16 bit to 2 8 bit
-	 */
-	public static void test(int value)
-	{
-		RasterProcessor instance = new RasterProcessor();
-		System.out.println();
-		System.out.print(String.format("%1$6d  ", value));
-		System.out.print(String.format("%1$02x  %2$02x  %3$7d", instance.high(value), instance.low(value),
-				instance.combine(instance.high(value), instance.low(value))));
-	}
-
-	protected void test2(int value)
-	{
-		System.out.println(String.format("%1$04x  %1$8d  %2$8d", value & dataMask, dataValue(value)));
-	}
-
-	/**
-	 * Test driver
-	 * 
-	 * @param args not used
-	 */
-	public static void main(String[] args)
-	{
-		DicomReader reader = new DicomReader(new File("testdicom.dcm"));
-		RasterProcessor instance = new RasterProcessor();
 	}
 }
